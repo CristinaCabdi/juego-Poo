@@ -7,12 +7,23 @@ class Entidad {
     this.height = height;
   }
 
-  // Método común para actualizar la posición
+  // Método para actualizar la posición del elemento
   actualizarPosicion() {
     this.element.style.left = `${this.x}px`;
     this.element.style.top = `${this.y}px`;
   }
+
+  // Método para verificar si dos objetos colisionan
+  colisionaConOtroObjeto(objeto) {
+    return (
+      this.x < objeto.x + objeto.width &&
+      this.x + this.width > objeto.x &&
+      this.y < objeto.y + objeto.height &&
+      this.y + this.height > objeto.y
+    );
+  }
 }
+
 
 // Clase Personaje (Alumno)
 class Personaje extends Entidad {
@@ -111,12 +122,106 @@ class Personaje extends Entidad {
 
 // Clase Moneda (Objetivo)
 class Moneda extends Entidad {
-  constructor() {
-    super(Math.random() * 700 + 50, Math.random() * 250 + 50, 30, 30); // Llamada al constructor de la clase base
+  constructor(tipo, listaErrores, listaMonedas) {
+    // Generamos una posición aleatoria
+    super(Math.random() * 700 + 250, Math.random() * 150 + 150, 30, 30);
 
+    this.tipo = tipo;
+    this.listaErrores = listaErrores;  // Lista de errores (para evitar colisiones)
+    this.listaMonedas = listaMonedas;  // Lista de monedas (para evitar colisiones)
+    
+    // Crear el elemento de la "moneda"
     this.element = document.createElement("div");
     this.element.classList.add("moneda");
+
+    // Definir qué imagen debe representar la moneda (HTML, CSS, JS)
+    this.setContenido(); // Llamamos al método que asigna la imagen correspondiente
+    
+    // Verificamos que la moneda no colisione con ninguna otra moneda o error
+    let colisionando = true;
+    while (colisionando) {
+      colisionando = false;
+      
+      // Comprobamos colisiones con otras monedas
+      for (let moneda of this.listaMonedas) {
+        if (this.colisionaConOtroObjeto(moneda)) {
+          colisionando = true; // Si hay colisión, se marca como colisionando
+          break;
+        }
+      }
+
+      // Comprobamos colisiones con los errores de sintaxis
+      for (let error of this.listaErrores) {
+        if (this.colisionaConOtroObjeto(error)) {
+          colisionando = true; // Si hay colisión con un error, también marcamos colisionando
+          break;
+        }
+      }
+
+      // Si colisiona, generamos nuevas coordenadas aleatorias para la moneda
+      if (colisionando) {
+        this.x = Math.random() * 700 + 50;
+        this.y = Math.random() * 250 + 50;
+      }
+    }
+
+    // Actualizamos la posición de la moneda después de las verificaciones
     this.actualizarPosicion();
+  }
+
+  // Método para verificar si dos objetos colisionan
+  colisionaConOtroObjeto(objeto) {
+    return (
+      this.x < objeto.x + objeto.width &&
+      this.x + this.width > objeto.x &&
+      this.y < objeto.y + objeto.height &&
+      this.y + this.height > objeto.y
+    );
+  }
+
+  // Método para establecer el contenido visual del "símbolo" (usando imágenes)
+  setContenido() {
+    let imagenUrl = ""; // Variable para almacenar la URL de la imagen
+
+    // Asignamos la imagen dependiendo del tipo de moneda
+    if (this.tipo === "html") {
+      if (Math.random() < 0.5) {
+        imagenUrl = "./public/img/html-icon/7903652.png";
+      } else {
+        imagenUrl = "./public/img/html-icon/5986100.png";
+      }
+    }
+    if (this.tipo === "css") {
+      if (Math.random() < 0.5) {
+        imagenUrl = "./public/img/css-icon/186319.png";
+      } else {
+        imagenUrl = "./public/img/css-icon/3368825.png";
+      }
+    }
+    if (this.tipo === "js") {
+      if (Math.random() < 0.5) {
+        imagenUrl = "./public/img/js-icon/13192332.png";
+      } else {
+        imagenUrl = "./public/img/js-icon/16511135.png";
+      }
+    }
+
+    // Crear una etiqueta <img> con la URL de la imagen
+    const img = document.createElement("img");
+    img.src = imagenUrl; // Asignar la URL de la imagen
+    img.alt = this.tipo; // Establecer un texto alternativo
+    img.style.width = "100%"; // Hacer que la imagen ocupe todo el tamaño de la moneda
+    img.style.height = "100%"; // Hacer que la imagen ocupe todo el tamaño de la moneda
+
+    // Limpiar el contenido de la moneda y agregar la imagen
+    this.element.innerHTML = "";
+    this.element.appendChild(img); // Agregar la imagen al elemento de la moneda
+  }
+
+  // Método para actualizar la posición de la moneda (en el contenedor)
+  actualizarPosicion() {
+    this.element.style.left = `${this.x}px`;
+    this.element.style.top = `${this.y}px`;
   }
 }
 
@@ -140,28 +245,32 @@ class Game {
     this.errores = [];
     this.puntuacion = 0;
 
+    //Crear monedas y
     this.crearEscenario();
     this.agregarEventos();
   }
 
-  // Crear el escenario inicial
-  crearEscenario() {
-    this.container.appendChild(this.personaje.element); // Añadir el personaje al contenedor
+ // Método para crear el escenario con diferentes tipos de monedas
+crearEscenario() {
+  this.container.appendChild(this.personaje.element); // Añadir el personaje al contenedor
 
-    // Crear las monedas
-    for (let i = 0; i < 5; i++) {
-      const moneda = new Moneda(); // Crear una moneda
-      this.monedas.push(moneda);
-      this.container.appendChild(moneda.element); // Añadir la moneda al contenedor
-    }
-
-    // Crear los errores de sintaxis
-    for (let i = 0; i < 3; i++) {
-      const error = new ErrorDeSintaxis(); // Crear un error
-      this.errores.push(error);
-      this.container.appendChild(error.element); // Añadir el error al contenedor
-    }
+  // Crear las monedas con símbolos de HTML, CSS y JS
+  const tipos = ["html", "css", "js"];
+  for (let i = 0; i < 5; i++) {
+    const tipoAleatorio = tipos[Math.floor(Math.random() * tipos.length)];
+    const moneda = new Moneda(tipoAleatorio, this.errores, this.monedas);
+    this.monedas.push(moneda); // Asegúrate de que la moneda se agrega a la lista
+    this.container.appendChild(moneda.element); // Añadir la moneda al contenedor
   }
+
+  // Crear los errores de sintaxis
+  for (let i = 0; i < 3; i++) {
+    const error = new ErrorDeSintaxis(); // Crear un error
+    this.errores.push(error);
+    this.container.appendChild(error.element); // Añadir el error al contenedor
+  }
+}
+
 
   // Agregar eventos de teclado
   agregarEventos() {

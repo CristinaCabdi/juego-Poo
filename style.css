@@ -2,7 +2,7 @@ body {
     margin: 0;
     font-family: Arial, sans-serif;
     overflow: hidden;
-    background-color: #b8b8b8;
+    background-color: #000000;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,7 +15,7 @@ body {
     width: 800px;
     height: 400px;
     position: relative;
-    background-color: #f5f5f5; /* Fondo claro */
+    background-color: #ffffff; /* Fondo claro */
     overflow: hidden;
   }  
 
@@ -30,22 +30,36 @@ body {
   }
   
   .personaje.caminando {
-    background-image: url('../public/img/caminando.png');
+    background-image: url('./public/img/caminando.png');
   }
   
   .personaje.saltando {
-    background-image: url('../public/img/saltando.png');
+    background-image: url('./public/img/saltando.png');
   }
 
-  .moneda {
-    width: 30px;
-    height: 30px;
-    position: absolute;
-    background-color: gold;
-    border-radius: 50%;
-    background-image: url('fragmento-icon.png'); /* Icono representativo */
-    background-size: cover;
-  }
+ /* Estilo base para las monedas */
+.moneda {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%; /* Aseguramos que la moneda tenga forma redonda */
+  background-size: cover; /* Hacemos que la imagen cubra toda la moneda */
+  background-position: center; /* Centra la imagen en la moneda */
+  /* Puedes añadir otros estilos si lo necesitas, por ejemplo, una sombra o borde */
+}
+
+
+
+/* Moneda tipo CSS */
+.moneda.css {
+  background-image: url('./public/img/css-icon.png '); /* Imagen para la moneda CSS */
+}
+
+/* Moneda tipo JavaScript */
+.moneda.js {
+  background-image: url('./public/img/js-icon.png'); /* Imagen para la moneda JS */
+}
+
 
   .error {
     width: 40px;
