@@ -175,27 +175,14 @@ class Moneda extends Entidad {
       }
     }
 
-    // Aseguramos que las coordenadas estén dentro de los límites del contenedor
-    this.x = Math.max(0, Math.min(this.x, 970)); // 1000 (ancho del contenedor) - 30 (ancho de la moneda)
-    this.y = Math.max(0, Math.min(this.y, 470)); // 500 (alto del contenedor) - 30 (alto de la moneda)
-
     // Actualizamos la posición de la moneda después de las verificaciones
     this.actualizarPosicion();
-  }
-
-  // Método para verificar si dos objetos colisionan
-  colisionaConOtroObjeto(objeto) {
-    return (
-      this.x < objeto.x + objeto.width &&
-      this.x + this.width > objeto.x &&
-      this.y < objeto.y + objeto.height &&
-      this.y + this.height > objeto.y
-    );
   }
 
   // Método para establecer el contenido visual del "símbolo" (usando imágenes)
   setContenido() {
     let imagenUrl = ""; // Variable para almacenar la URL de la imagen
+    let sonidoUrl = ""; // URL del sonido
 
     // Asignamos la imagen dependiendo del tipo de moneda
     if (this.tipo === "html") {
@@ -204,6 +191,7 @@ class Moneda extends Entidad {
       } else {
         imagenUrl = "./public/img/html-icon/5986100.png";
       }
+      sonidoUrl = "./sounds/ding-idea-40142.mp3"; 
     }
     if (this.tipo === "css") {
       if (Math.random() < 0.5) {
@@ -211,6 +199,7 @@ class Moneda extends Entidad {
       } else {
         imagenUrl = "./public/img/css-icon/3368825.png";
       }
+      sonidoUrl = "./sounds/ding-idea-40142.mp3"; 
     }
     if (this.tipo === "js") {
       if (Math.random() < 0.5) {
@@ -218,6 +207,7 @@ class Moneda extends Entidad {
       } else {
         imagenUrl = "./public/img/js-icon/16511135.png";
       }
+      sonidoUrl = "./sounds/ding-idea-40142.mp3"; 
     }
 
     // Crear una etiqueta <img> con la URL de la imagen
@@ -230,6 +220,16 @@ class Moneda extends Entidad {
     // Limpiar el contenido de la moneda y agregar la imagen
     this.element.innerHTML = "";
     this.element.appendChild(img); // Agregar la imagen al elemento de la moneda
+    this.sonid = new Audio(sonidoUrl); // Crear un objeto de sonido con la Url adecuada
+  }
+
+  // Método para detectar la colisión con el personaje y reproducir el sonido
+  colisionaCon(objeto) {
+    if (super.colisionaConOtroObjeto(objeto)) {
+      this.sonido.play();  // Reproducir el sonido correspondiente a la moneda
+      return true; // Devuelve true si hay colisión
+    }
+    return false; // Si no hay colisión, devuelve false
   }
 
   // Método para actualizar la posición de la moneda (en el contenedor)
