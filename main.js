@@ -24,7 +24,6 @@ class Entidad {
   }
 }
 
-
 // Clase Personaje (Alumno)
 class Personaje extends Entidad {
   constructor() {
@@ -128,53 +127,60 @@ caer() {
   }
 }
 
-
-// Clase Moneda (Objetivo)
-// ...existing code...
 class Moneda extends Entidad {
   constructor(tipo, listaErrores, listaMonedas) {
-    // Generamos una posición aleatoria dentro de los límites del contenedor
-    super(Math.random() * 700 + 250, Math.random() * 150 + 150, 30, 30);
-
-    this.tipo = tipo;
-    this.listaErrores = listaErrores;  // Lista de errores (para evitar colisiones)
-    this.listaMonedas = listaMonedas;  // Lista de monedas (para evitar colisiones)
-    
-    // Crear el elemento de la "moneda"
-    this.element = document.createElement("div");
-    this.element.classList.add("moneda");
-
-    // Definir qué imagen debe representar la moneda (HTML, CSS, JS)
-    this.setContenido(); // Llamamos al método que asigna la imagen correspondiente
-    
-    // Verificamos que la moneda no colisione con ninguna otra moneda o error
+    // Obtenemos las dimensiones del contenedor del juego
+    const containerWidth = document.getElementById("game-container").offsetWidth;
+    const containerHeight = document.getElementById("game-container").offsetHeight;
+  
+    let x, y;
     let colisionando = true;
+  
+    // Generamos la posición aleatoria hasta que no haya colisiones
     while (colisionando) {
       colisionando = false;
       
+      // Generamos coordenadas aleatorias con un margen de 50px
+      x = Math.random() * (containerWidth - 80) + 40; // Margen de 40px en el eje x
+      y = Math.random() * (containerHeight - 80) + 40; // Margen de 40px en el eje y
+  
       // Comprobamos colisiones con otras monedas
-      for (let moneda of this.listaMonedas) {
-        if (this.colisionaConOtroObjeto(moneda)) {
-          colisionando = true; // Si hay colisión, se marca como colisionando
+      for (let moneda of listaMonedas) {
+        // Comprobamos si la nueva moneda está a menos de 50px de otra
+        const distanciaX = Math.abs(x - moneda.x);
+        const distanciaY = Math.abs(y - moneda.y);
+        if (distanciaX < 50 && distanciaY < 50) {
+          colisionando = true; // Si hay colisión, reiniciamos la generación
           break;
         }
       }
-
-      // Comprobamos colisiones con los errores de sintaxis
-      for (let error of this.listaErrores) {
-        if (this.colisionaConOtroObjeto(error)) {
-          colisionando = true; // Si hay colisión con un error, también marcamos colisionando
+  
+      // Además, podemos agregar una comprobación con los errores de sintaxis si es necesario:
+      for (let error of listaErrores) {
+        // Comprobamos si la nueva moneda está a menos de 50px de un error
+        const distanciaX = Math.abs(x - error.x);
+        const distanciaY = Math.abs(y - error.y);
+        if (distanciaX < 50 && distanciaY < 50) {
+          colisionando = true; // Si hay colisión con un error, reiniciamos la generación
           break;
         }
-      }
-
-      // Si colisiona, generamos nuevas coordenadas aleatorias para la moneda
-      if (colisionando) {
-        this.x = Math.random() * 700 + 50;
-        this.y = Math.random() * 250 + 50;
       }
     }
-
+  
+    // Llamamos al constructor de la clase base (Entidad)
+    super(x, y, 30, 30);
+  
+    this.tipo = tipo;
+    this.listaErrores = listaErrores;  // Lista de errores (para evitar colisiones)
+    this.listaMonedas = listaMonedas;  // Lista de monedas (para evitar colisiones)
+  
+    // Crear el elemento de la "moneda"
+    this.element = document.createElement("div");
+    this.element.classList.add("moneda");
+  
+    // Definir qué imagen debe representar la moneda (HTML, CSS, JS)
+    this.setContenido(); // Llamamos al método que asigna la imagen correspondiente
+  
     // Actualizamos la posición de la moneda después de las verificaciones
     this.actualizarPosicion();
   }
@@ -182,7 +188,7 @@ class Moneda extends Entidad {
   // Método para establecer el contenido visual del "símbolo" (usando imágenes)
   setContenido() {
     let imagenUrl = ""; // Variable para almacenar la URL de la imagen
-    let sonidoUrl = ""; // URL del sonido
+  
 
     // Asignamos la imagen dependiendo del tipo de moneda
     if (this.tipo === "html") {
@@ -191,7 +197,6 @@ class Moneda extends Entidad {
       } else {
         imagenUrl = "./public/img/html-icon/5986100.png";
       }
-      sonidoUrl = "./sounds/ding-idea-40142.mp3"; 
     }
     if (this.tipo === "css") {
       if (Math.random() < 0.5) {
@@ -199,7 +204,6 @@ class Moneda extends Entidad {
       } else {
         imagenUrl = "./public/img/css-icon/3368825.png";
       }
-      sonidoUrl = "./sounds/ding-idea-40142.mp3"; 
     }
     if (this.tipo === "js") {
       if (Math.random() < 0.5) {
@@ -207,7 +211,6 @@ class Moneda extends Entidad {
       } else {
         imagenUrl = "./public/img/js-icon/16511135.png";
       }
-      sonidoUrl = "./sounds/ding-idea-40142.mp3"; 
     }
 
     // Crear una etiqueta <img> con la URL de la imagen
@@ -220,16 +223,6 @@ class Moneda extends Entidad {
     // Limpiar el contenido de la moneda y agregar la imagen
     this.element.innerHTML = "";
     this.element.appendChild(img); // Agregar la imagen al elemento de la moneda
-    this.sonid = new Audio(sonidoUrl); // Crear un objeto de sonido con la Url adecuada
-  }
-
-  // Método para detectar la colisión con el personaje y reproducir el sonido
-  colisionaCon(objeto) {
-    if (super.colisionaConOtroObjeto(objeto)) {
-      this.sonido.play();  // Reproducir el sonido correspondiente a la moneda
-      return true; // Devuelve true si hay colisión
-    }
-    return false; // Si no hay colisión, devuelve false
   }
 
   // Método para actualizar la posición de la moneda (en el contenedor)
@@ -333,19 +326,22 @@ class Game {
           this.container.removeChild(moneda.element);
           this.monedas.splice(index, 1);
           this.puntuacion += 10; // Aumentamos la puntuación por recoger una moneda
+          const sonidoAcierto = new Audio("./sounds/ding-idea-40142.mp3"); // Ruta al sonido de error
+          sonidoAcierto.play(); // Reproducir el sonido de error
         }
       });
-
       // Comprobamos si el personaje choca con un error de sintaxis
       this.errores.forEach((error, index) => {
         if (this.personaje.colisionaConOtroObjeto(error)) {
           this.container.removeChild(error.element);
           this.errores.splice(index, 1);
           this.puntuacion -= 5; // Restamos puntos por chocar con un error
+          const sonidoError = new Audio("./sounds/error-126627.mp3"); // Ruta al sonido de error
+          sonidoError.play(); // Reproducir el sonido de error
         }
       });
-    }, 100);
-  }
+        }, 100);
+      }
 
     // Método para comprobar que siempre haya exactamente 5 monedas normales y 3 de error
     comprobarMonedas() {

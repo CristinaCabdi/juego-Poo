@@ -1,4 +1,5 @@
-body {
+
+  body {
     margin: 0;
     font-family: Arial, sans-serif;
     overflow: hidden;
@@ -14,9 +15,11 @@ body {
   #game-container {
     width: 800px;
     height: 400px;
-    position: relative;
-    background-color: #ffffff; /* Fondo claro */
-    overflow: hidden;
+    background-image: url('./public/img/fondojuego1.png'); /*d Ruta a tu imagen */
+    background-size: cover; /* Esto hace que la imagen cubra toda el área del contenedor */
+    background-position: center; /* Centra la imagen en el contenedor */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    position: relative; /* Asegura que los elementos hijos se posicionen dentro del contenedor */
   }  
 
   .personaje {
@@ -48,8 +51,6 @@ body {
   /* Puedes añadir otros estilos si lo necesitas, por ejemplo, una sombra o borde */
 }
 
-
-
 /* Moneda tipo CSS */
 .moneda.css {
   background-image: url('./public/img/css-icon.png '); /* Imagen para la moneda CSS */
@@ -59,8 +60,6 @@ body {
 .moneda.js {
   background-image: url('./public/img/js-icon.png'); /* Imagen para la moneda JS */
 }
-
-
   .error {
     width: 40px;
     height: 40px;
@@ -91,41 +90,6 @@ body {
   #btnControlMusica:hover {
     background-color: #678ce0;
   }
-  
 
-  /*Media querry */
-  /*@media (max-width: 900px) {
-    #game-container {
-      width: 90vw;
-      height: calc(90vw / 2);
-    }
-    
-    .personaje {
-      width: 8vw;
-      height: 8vw;
-    }
-    
-    .moneda {
-      width: 5vw;
-      height: 5vw;
-    }
-  }
-
-  @media (max-width: 600px) {
-    #game-container {
-      width: 100vw;
-      height: calc(100vw / 2);
-    }
-    
-    .personaje {
-      width: 6vw;
-      height: 6vw;
-    }
-    
-    .moneda {
-      width: 4vw;
-      height: 4vw;
-    }
-  }
 
  
