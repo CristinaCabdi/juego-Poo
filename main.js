@@ -249,7 +249,7 @@ class Game {
     this.personaje = new Personaje(); // Crear el personaje
     this.monedas = [];
     this.errores = [];
-    this.puntuacion = 0;
+    this.puntuacion = 0
 
     // Añadir el contador de puntos en el HTML
     this.contadorPuntosElement = document.getElementById("puntaje");
@@ -264,7 +264,13 @@ class Game {
 
    // Método para actualizar la puntuación en el HTML
    actualizarContadorPuntos() {
-    this.contadorPuntosElement.textContent = this.puntuacion;
+    if (this.puntuacion == 20){
+      this.container.innerHTML = `<div style="display: flex; justify-content: center; align-items: center; height: 100%;"><img src="./public/img/Congratulations.gif"></div>`;
+      this.contadorPuntosElement.textContent = this.puntuacion;
+    }else{
+      this.contadorPuntosElement.textContent = this.puntuacion;
+    }
+    
   }
 
   // Método para agregar la música de fondo
