@@ -55,7 +55,7 @@ class Personaje extends Entidad {
       this.element.classList.remove("saltando"); // Aseguramos que se quite la clase de saltar mientras camina
     } else if (evento.key === "ArrowLeft" && this.x > 0) {
       this.x -= this.velocidad; // Mueve el personaje a la izquierda
-      this.element.style.backgroundImage = "url('../public/img/saltando.png')"; // Cambiar imagen a caminar
+      this.element.style.backgroundImage = "url('../public/img/caminando.png')"; // Cambiar imagen a caminar
       this.element.classList.add("caminando"); // Clase de caminar
       this.element.classList.remove("saltando"); // Aseguramos que se quite la clase de saltar mientras camina
     } else if (evento.key === "ArrowUp" && !this.saltando) {
@@ -67,63 +67,73 @@ class Personaje extends Entidad {
 
   // Método para saltar
   saltar() {
-    if (!this.saltando) {
-      this.saltando = true;
-      let alturaMaxima = this.y - this.alturaSalto;
+    this.element.style.backgroundImage = "url('../public/img/saltando.png')"; // Cambiar imagen a saltar
+      if (!this.saltando && (this.puedeSaltarEnAire || !this.cayendo)) {
+          if (this.cayendo) {
+              this.puedeSaltarEnAire = false;  // Ya usó el salto en el aire
+              clearInterval(this.intervaloGravedad); // Interrumpe la caida
+              this.intervaloGravedad = null;
+              this.cayendo = false;
+          }
 
-    // Cambiar la clase a "saltando" cuando el personaje empieza a saltar
-    this.element.style.backgroundImage = "url('../public/img/saltando.png')"; // Cambiar la imagen a saltar
-    this.element.classList.add("saltando");
-    this.element.classList.remove("caminando"); // Aseguramos que se quite la clase de caminar mientras salta
+          this.saltando = true;
+          let alturaMaxima = this.y - 170;
 
-
-      // Proceso de salto
-      const salto = setInterval(() => {
-        if (this.y > alturaMaxima) {
-          this.y -= 10; // Subir el personaje
+          this.intervaloSalto = setInterval(() => {
+              if (this.y > alturaMaxima) {
+                  this.y -= 10;
+              } else {
+                  clearInterval(this.intervaloSalto);
+                  this.intervaloSalto = null;
+                  this.saltando = false;
+                  this.caer();
+              }
+              this.actualizarPosicion();
+          }, 20);
+      }
+  }
+    
+    
+caer() {
+    this.cayendo = true;
+    const containerHeight = this.element.parentElement.offsetHeight;
+    this.intervaloGravedad = setInterval(() => {
+        if (this.y + this.height < containerHeight) {
+            this.y += 10;
         } else {
-          clearInterval(salto); // Termina el salto cuando llega a la altura máxima
-          this.caer();
+            clearInterval(this.intervaloGravedad);
+            this.intervaloGravedad = null;
+            this.cayendo = false;
+            this.puedeSaltarEnAire = true; // Resetea el flag al tocar el suelo
+            this.y = containerHeight - this.height;
+            this.actualizarPosicion();
+            return;
         }
         this.actualizarPosicion();
-      }, 20);
-    }
-  }
-
-  // Método para que el personaje caiga después de saltar
-  caer() {
-    const gravedad = setInterval(() => {
-      if (this.y < 300) {
-        this.y += 10; // El personaje cae hasta el suelo
-      } else {
-        clearInterval(gravedad); // Se detiene la caída cuando llega al suelo
-        this.y = 300; // Aseguramos que quede en la posición final del suelo
-        this.saltando = false; // El personaje ya no está saltando
-
-         // Al finalizar el salto, volvemos a poner la imagen de caminar
-         this.element.style.backgroundImage = "url('../public/img/caminando.png')"; // Cambiar la imagen a caminar
-         this.element.classList.remove("saltando");
-         this.element.classList.add("caminando");
-       }
-      this.actualizarPosicion();
     }, 20);
+}
+
+  updPosition(){
+    this.element.style.left = `${this.x}px`
+    this.element.style.top = `${this.y}px`
   }
 
-  // Método para detectar colisiones (si el personaje choca con un objeto)
-  colisionaCon(objeto) {
+  collisionWhit(obj){
     return (
-      this.x < objeto.x + objeto.width &&
-      this.x + this.width > objeto.x &&
-      this.y < objeto.y + objeto.height &&
-      this.y + this.height > objeto.y
-    );
+        this.x < obj.x + obj.width &&
+        this.x + this.width > obj.x &&
+        this.y < obj.y + obj.height &&
+        this.y + this.height > obj.y
+      );
   }
 }
 
+
 // Clase Moneda (Objetivo)
+// ...existing code...
 class Moneda extends Entidad {
   constructor(tipo, listaErrores, listaMonedas) {
-    // Generamos una posición aleatoria
+    // Generamos una posición aleatoria dentro de los límites del contenedor
     super(Math.random() * 700 + 250, Math.random() * 150 + 150, 30, 30);
 
     this.tipo = tipo;
@@ -164,6 +174,10 @@ class Moneda extends Entidad {
         this.y = Math.random() * 250 + 50;
       }
     }
+
+    // Aseguramos que las coordenadas estén dentro de los límites del contenedor
+    this.x = Math.max(0, Math.min(this.x, 970)); // 1000 (ancho del contenedor) - 30 (ancho de la moneda)
+    this.y = Math.max(0, Math.min(this.y, 470)); // 500 (alto del contenedor) - 30 (alto de la moneda)
 
     // Actualizamos la posición de la moneda después de las verificaciones
     this.actualizarPosicion();
@@ -245,32 +259,64 @@ class Game {
     this.errores = [];
     this.puntuacion = 0;
 
-    //Crear monedas y
+    // Crear el escenario con monedas y errores
     this.crearEscenario();
     this.agregarEventos();
+    this.comprobarMonedas(); // Asegura que siempre haya al menos 5 monedas
+    this.agregarMusicaDeFondo();
+    this.agregarControlMusica();
   }
 
- // Método para crear el escenario con diferentes tipos de monedas
-crearEscenario() {
-  this.container.appendChild(this.personaje.element); // Añadir el personaje al contenedor
-
-  // Crear las monedas con símbolos de HTML, CSS y JS
-  const tipos = ["html", "css", "js"];
-  for (let i = 0; i < 5; i++) {
-    const tipoAleatorio = tipos[Math.floor(Math.random() * tipos.length)];
-    const moneda = new Moneda(tipoAleatorio, this.errores, this.monedas);
-    this.monedas.push(moneda); // Asegúrate de que la moneda se agrega a la lista
-    this.container.appendChild(moneda.element); // Añadir la moneda al contenedor
+  // Método para agregar la música de fondo
+  agregarMusicaDeFondo() {
+    // Crear el elemento de audio
+    this.musicaFondo = new Audio("./sounds/o-coelhinho-que-cacava-baloes-258711.mp3"); // Ruta al archivo de música
+    this.musicaFondo.loop = true; // Reproducir la música en bucle
+    this.musicaFondo.volume = 0.2; // Volumen de la música (de 0 a 1)
+    this.musicaFondo.play(); // Iniciar la reproducción de la música
+    this.musicaEncendida = true; // Variable para saber si la música está encendida
   }
 
-  // Crear los errores de sintaxis
-  for (let i = 0; i < 3; i++) {
-    const error = new ErrorDeSintaxis(); // Crear un error
-    this.errores.push(error);
-    this.container.appendChild(error.element); // Añadir el error al contenedor
-  }
-}
 
+  // Método para agregar el control de música (encender/apagar)
+  agregarControlMusica() {
+    const btnControlMusica = document.getElementById("btnControlMusica");
+
+    // Agregar un evento de clic al botón
+    btnControlMusica.addEventListener("click", () => {
+      if (this.musicaEncendida) {
+        this.musicaFondo.pause(); // Pausar la música
+        btnControlMusica.textContent = "Encender Música"; // Cambiar texto del botón
+      } else {
+        this.musicaFondo.play(); // Reanudar la música
+        btnControlMusica.textContent = "Apagar Música"; // Cambiar texto del botón
+      }
+
+      // Cambiar el estado de la música (encendida/apagada)
+      this.musicaEncendida = !this.musicaEncendida;
+    });
+  }
+
+  // Método para crear el escenario con diferentes tipos de monedas
+  crearEscenario() {
+    this.container.appendChild(this.personaje.element); // Añadir el personaje al contenedor
+
+    // Crear las monedas con símbolos de HTML, CSS y JS
+    const tipos = ["html", "css", "js"];
+    for (let i = 0; i < 5; i++) {
+      const tipoAleatorio = tipos[Math.floor(Math.random() * tipos.length)];
+      const moneda = new Moneda(tipoAleatorio, this.errores, this.monedas);
+      this.monedas.push(moneda); // Asegúrate de que la moneda se agrega a la lista
+      this.container.appendChild(moneda.element); // Añadir la moneda al contenedor
+    }
+
+    // Crear los errores de sintaxis
+    for (let i = 0; i < 3; i++) {
+      const error = new ErrorDeSintaxis(); // Crear un error
+      this.errores.push(error);
+      this.container.appendChild(error.element); // Añadir el error al contenedor
+    }
+  }
 
   // Agregar eventos de teclado
   agregarEventos() {
@@ -283,7 +329,7 @@ crearEscenario() {
     setInterval(() => {
       // Comprobamos si el personaje recoge monedas
       this.monedas.forEach((moneda, index) => {
-        if (this.personaje.colisionaCon(moneda)) {
+        if (this.personaje.colisionaConOtroObjeto(moneda)) {
           this.container.removeChild(moneda.element);
           this.monedas.splice(index, 1);
           this.puntuacion += 10; // Aumentamos la puntuación por recoger una moneda
@@ -292,7 +338,7 @@ crearEscenario() {
 
       // Comprobamos si el personaje choca con un error de sintaxis
       this.errores.forEach((error, index) => {
-        if (this.personaje.colisionaCon(error)) {
+        if (this.personaje.colisionaConOtroObjeto(error)) {
           this.container.removeChild(error.element);
           this.errores.splice(index, 1);
           this.puntuacion -= 5; // Restamos puntos por chocar con un error
@@ -300,8 +346,30 @@ crearEscenario() {
       });
     }, 100);
   }
-}
 
-// Iniciar el juego
-const juego = new Game();
+    // Método para comprobar que siempre haya exactamente 5 monedas normales y 3 de error
+    comprobarMonedas() {
+      setInterval(() => {
+        // Si el número de monedas normales es menor a 5, añadir monedas hasta llegar a 5
+        while (this.monedas.filter(moneda => !this.errores.includes(moneda)).length < 5) {
+          const tipos = ["html", "css", "js"];
+          const tipoAleatorio = tipos[Math.floor(Math.random() * tipos.length)];
+          const moneda = new Moneda(tipoAleatorio, this.errores, this.monedas);
+          this.monedas.push(moneda);
+          this.container.appendChild(moneda.element);
+        }
+  
+        // Si el número de errores es menor a 3, añadir errores hasta llegar a 3
+        while (this.errores.length < 3) {
+          const error = new ErrorDeSintaxis(); // Crear un error
+          this.errores.push(error);
+          this.container.appendChild(error.element); // Añadir el error al contenedor
+        }
+      }, 1000); // Comprobar cada segundo
+    }
+  }
+  
+  // Iniciar el juego
+  const juego = new Game();
+
 

@@ -2,7 +2,7 @@ body {
     margin: 0;
     font-family: Arial, sans-serif;
     overflow: hidden;
-    background-color: #000000;
+    background-color: #f9f2f2;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -70,6 +70,28 @@ body {
     background-image: url('error-icon.png'); /* Icono de error */
     background-size: cover;
   }
+
+  #control-musica-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+  }
+  
+  #btnControlMusica {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #678ce0;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  #btnControlMusica:hover {
+    background-color: #678ce0;
+  }
+  
 
   /*Media querry */
   /*@media (max-width: 900px) {
