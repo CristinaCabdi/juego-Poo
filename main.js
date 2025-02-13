@@ -332,25 +332,37 @@ class Game {
         if (this.personaje.colisionaConOtroObjeto(moneda)) {
           this.container.removeChild(moneda.element);
           this.monedas.splice(index, 1);
-          this.puntuacion++; // Aumentamos la puntuación por recoger una moneda
-          this.actualizarContadorPuntos(); // Actualizar el contador de puntos
-          const sonidoAcierto = new Audio("./sounds/ding-idea-40142.mp3"); // Ruta al sonido de error
-          sonidoAcierto.play(); // Reproducir el sonido de error
-        }
-      });
-      // Comprobamos si el personaje choca con un error de sintaxis
-      this.errores.forEach((error, index) => {
-        if (this.personaje.colisionaConOtroObjeto(error)) {
-          this.container.removeChild(error.element);
-          this.errores.splice(index, 1);
-          this.actualizarContadorPuntos(); // Actualizar el contador de puntos
-          const sonidoError = new Audio("./sounds/error-126627.mp3"); // Ruta al sonido de error
-          sonidoError.play(); // Reproducir el sonido de error
-          sonidoError.play(); // Reproducir el sonido de error
-        }
-      });
-        }, 100);
+
+      // Si la moneda no es de error, sumamos puntos
+      if (moneda.tipo !== "error") {
+        this.puntuacion += 1; // Aumentamos la puntuación por recoger una moneda normal (HTML, CSS, JS)
+      } else {
+        this.puntuacion -= 1; // Restamos un punto si es una moneda de error
       }
+      
+      this.actualizarContadorPuntos(); // Actualizamos el contador en la UI
+
+      const sonidoAcierto = new Audio("./sounds/ding-idea-40142.mp3"); // Sonido de acierto
+      sonidoAcierto.play(); // Reproducir el sonido de acierto
+    }
+  });
+
+       // Comprobamos si el personaje choca con un error de sintaxis
+    this.errores.forEach((error, index) => {
+      if (this.personaje.colisionaConOtroObjeto(error)) {
+        this.container.removeChild(error.element);
+        this.errores.splice(index, 1);
+
+        // Restamos un punto por chocar con un error
+        this.puntuacion -= 1;
+        this.actualizarContadorPuntos(); // Actualizamos el contador en la UI
+
+        const sonidoError = new Audio("./sounds/error-126627.mp3"); // Ruta al sonido de error
+        sonidoError.play(); // Reproducir el sonido de error
+      }
+    });
+  }, 100);
+}
 
     // Método para comprobar que siempre haya exactamente 5 monedas normales y 3 de error
     comprobarMonedas() {
