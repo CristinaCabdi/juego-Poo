@@ -132,7 +132,6 @@ class Moneda extends Entidad {
     // Obtenemos las dimensiones del contenedor del juego
     const containerWidth = document.getElementById("game-container").offsetWidth;
     const containerHeight = document.getElementById("game-container").offsetHeight;
-  
     let x, y;
     let colisionando = true;
   
@@ -252,12 +251,20 @@ class Game {
     this.errores = [];
     this.puntuacion = 0;
 
+    // Añadir el contador de puntos en el HTML
+    this.contadorPuntosElement = document.getElementById("puntaje");
+
     // Crear el escenario con monedas y errores
     this.crearEscenario();
     this.agregarEventos();
     this.comprobarMonedas(); // Asegura que siempre haya al menos 5 monedas
     this.agregarMusicaDeFondo();
     this.agregarControlMusica();
+  }
+
+   // Método para actualizar la puntuación en el HTML
+   actualizarContadorPuntos() {
+    this.contadorPuntosElement.textContent = this.puntuacion;
   }
 
   // Método para agregar la música de fondo
@@ -325,7 +332,8 @@ class Game {
         if (this.personaje.colisionaConOtroObjeto(moneda)) {
           this.container.removeChild(moneda.element);
           this.monedas.splice(index, 1);
-          this.puntuacion += 10; // Aumentamos la puntuación por recoger una moneda
+          this.puntuacion++; // Aumentamos la puntuación por recoger una moneda
+          this.actualizarContadorPuntos(); // Actualizar el contador de puntos
           const sonidoAcierto = new Audio("./sounds/ding-idea-40142.mp3"); // Ruta al sonido de error
           sonidoAcierto.play(); // Reproducir el sonido de error
         }
@@ -335,8 +343,9 @@ class Game {
         if (this.personaje.colisionaConOtroObjeto(error)) {
           this.container.removeChild(error.element);
           this.errores.splice(index, 1);
-          this.puntuacion -= 5; // Restamos puntos por chocar con un error
+          this.actualizarContadorPuntos(); // Actualizar el contador de puntos
           const sonidoError = new Audio("./sounds/error-126627.mp3"); // Ruta al sonido de error
+          sonidoError.play(); // Reproducir el sonido de error
           sonidoError.play(); // Reproducir el sonido de error
         }
       });

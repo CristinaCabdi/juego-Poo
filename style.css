@@ -3,7 +3,7 @@
     margin: 0;
     font-family: Arial, sans-serif;
     overflow: hidden;
-    background-color: #f9f2f2;
+    background-color: #000000;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -64,9 +64,9 @@
     width: 40px;
     height: 40px;
     position: absolute;
-    background-color: red;
+  
     border-radius: 50%;
-    background-image: url('error-icon.png'); /* Icono de error */
+    background-image: url('./public/img/error.png'); /* Icono de error */
     background-size: cover;
   }
 
@@ -77,19 +77,34 @@
     z-index: 10;
   }
   
+  h1 {
+    color: #65adb0; /* Cambia este valor al color que prefieras */
+  }
+
   #btnControlMusica {
     padding: 10px 20px;
     font-size: 16px;
-    background-color: #678ce0;
+    background-color: #65adb0;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin-top: 20px;
   }
   
   #btnControlMusica:hover {
-    background-color: #678ce0;
+    background-color: #65adb0;
   }
 
+  #contador-puntos {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
+    color: #65adb0;
+    font-family: Arial, sans-serif;
+    z-index: 10;
+  }
+  
 
  
