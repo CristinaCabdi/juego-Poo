@@ -3,9 +3,11 @@
     margin: 0;
     font-family: Arial, sans-serif;
     overflow: hidden;
+    background-image: url('./public/img/fondo.png'); /*d Ruta a tu imagen */
     background-color: #201f1f;
     display: flex;
-    justify-content: center;
+    background-size: cover;
+    background-repeat: no-repeat;  justify-content: center;
     align-items: center;
     height: 100vh;
     flex-direction: column;
@@ -99,11 +101,16 @@
   #contador-puntos {
     position: absolute;
     top: 10px;
-    left: 10px;
-    font-size: 24px;
+    font-weight: bold;  font-size: 32px;
     color: #65adb0;
-    font-family: Arial, sans-serif;
+    font-family: Arial, sans-serif;  left: 10px;
+    top: 20px;
+    left: 35%;
+    transform: translateX(-50%);
+    font-size: 30px;
+    color: #65adb0;   font-family: Arial, sans-serif;
     z-index: 10;
+    margin-top: 132px;
   }
   
 
