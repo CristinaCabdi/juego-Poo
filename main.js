@@ -36,7 +36,7 @@ class Personaje extends Entidad {
     this.element.classList.add("personaje");
 
     // Establecemos la imagen inicial del personaje
-    this.element.style.backgroundImage = "url('../public/img/caminando.png')";
+    this.element.style.backgroundImage = "url('./public/img/caminando.png')";
 
     this.element.style.width = `${this.width}px`;
     this.element.style.height = `${this.height}px`;
@@ -49,12 +49,12 @@ class Personaje extends Entidad {
 
     if (evento.key === "ArrowRight" && this.x + this.width < containerWidth) {
       this.x += this.velocidad;
-      this.element.style.backgroundImage = "url('../public/img/caminando.png')";
+      this.element.style.backgroundImage = "url('./public/img/caminando.png')";
       this.element.classList.add("caminando");
       this.element.classList.remove("saltando");
     } else if (evento.key === "ArrowLeft" && this.x > 0) {
       this.x -= this.velocidad;
-      this.element.style.backgroundImage = "url('../public/img/caminando.png')";
+      this.element.style.backgroundImage = "url('./public/img/caminando.png')";
       this.element.classList.add("caminando");
       this.element.classList.remove("saltando");
     } else if (evento.key === "ArrowUp" && !this.saltando) {
@@ -66,7 +66,7 @@ class Personaje extends Entidad {
 
   // Método para saltar
   saltar() {
-    this.element.style.backgroundImage = "url('../public/img/saltando.png')";
+    this.element.style.backgroundImage = "url('./public/img/saltando.png')";
     if (!this.saltando && (this.puedeSaltarEnAire || !this.cayendo)) {
       if (this.cayendo) {
         this.puedeSaltarEnAire = false;
