@@ -3,7 +3,7 @@
 ## 🚀 Descripción
 ¡Bienvenido a Code Collector - un emocionante juego educativo donde te conviertes en un héroe de la programación recolectando símbolos de HTML, CSS y JavaScript mientras evitas esos molestos errores de sintaxis! Perfecto para jóvenes programadores y cualquiera que quiera divertirse mientras se familiariza con conceptos de desarrollo web.
 
-![Code Collector Game](./public/img/fondojuego1.png)
+![](./public/img/readme.png)
 
 ## 🎯 Objetivo del Juego
 Ayuda a nuestro intrépido programador a recolectar símbolos de lenguajes de programación mientras esquiva errores de sintaxis. ¿Podrás alcanzar los 20 puntos y convertirte en un maestro del código?
